@@ -1,0 +1,33 @@
+- name: Build & deploy docker container
+  hosts: docker
+  gather_facts: false
+  remote_user: root
+  tasks: 
+    - name: stopped the container
+      docker_container:
+       name: finter-container
+       image: finter:latest
+       state: stopped
+    - name: delete the container
+      docker_container:
+       name: finter-container
+       image: finter:latest
+       state: absent
+    - name: removing docker image
+      docker_image:
+        name: finter:latest
+        state: absent
+    - name: build docker image
+      docker_image:
+        name: finter:latest
+        source: build
+        build:
+         path: ~/project/
+        state: present
+    - name: creating the container
+      docker_container:
+       name: finter-container
+       image: finter:latest
+       ports: 
+        - "80:80"
+       state: started
